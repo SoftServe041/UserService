@@ -13,6 +13,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import java.util.Collection;
 
 @Entity
 @Table(name = "users")
@@ -41,9 +42,9 @@ public class UserEntity {
     @OneToOne
     private BillingDetailsEntity billingDetails;
 
-//    @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
-//    @JoinTable(name = "users_roles",
-//            joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
-//            inverseJoinColumns = @JoinColumn(name = "roles_id", referencedColumnName = "id"))
-//    private Collection<RoleEntity> roles;
+    @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "roles_id", referencedColumnName = "id"))
+    private Collection<RoleEntity> roles;
 }
