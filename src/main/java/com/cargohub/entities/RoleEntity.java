@@ -1,6 +1,6 @@
 package com.cargohub.entities;
 
-import com.cargohub.entities.extra.Role;
+import com.cargohub.entities.extra.Roles;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -15,7 +15,7 @@ public class RoleEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "name")
-    private Role role;
+    private Roles role;
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     private Collection<UserEntity> users;

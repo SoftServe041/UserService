@@ -1,9 +1,12 @@
 package com.cargohub.services.impl;
 
 import com.cargohub.dto.UserDto;
+import com.cargohub.entities.RoleEntity;
 import com.cargohub.entities.UserEntity;
+import com.cargohub.entities.extra.Roles;
 import com.cargohub.exceptions.ErrorMessages;
 import com.cargohub.exceptions.UserServiceException;
+import com.cargohub.repositories.RoleRepository;
 import com.cargohub.repositories.UserRepository;
 import com.cargohub.services.UserService;
 import org.modelmapper.ModelMapper;
@@ -16,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -23,12 +27,15 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
+                           BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.modelMapper = modelMapper;
     }
@@ -42,14 +49,12 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = modelMapper.map(user, UserEntity.class);
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
-//        Collection<RoleEntity> roleEntities = new HashSet<>();
-//        for (String role : user.getRoles()) {
-//            RoleEntity roleEntity = roleRepository.findByName(role);
-//            if (roleEntity != null) {
-//                roleEntities.add(roleEntity);
-//            }
-//        }
-//        userEntity.setRoles(roleEntities);
+        Collection<RoleEntity> roleEntities = new HashSet<>();
+        RoleEntity roleEntity = roleRepository.findByName(Roles.ROLE_USER.name());
+        if (roleEntity != null) {
+            roleEntities.add(roleEntity);
+        }
+        userEntity.setRoles(roleEntities);
 
         UserEntity storedUser = userRepository.save(userEntity);
 
@@ -95,7 +100,7 @@ public class UserServiceImpl implements UserService {
         List<UserDto> returnValue = new ArrayList<>();
 
         if (page > 0) {
-            page-=1;
+            page -= 1;
         }
 
         Pageable pageableRequest = PageRequest.of(page, limit);
