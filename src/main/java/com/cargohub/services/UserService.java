@@ -7,10 +7,10 @@ import java.util.List;
 public interface UserService {
     UserDto createUser(UserDto user);
     UserDto getUser(String email);
-    UserDto getUserByUserId(String userId);
+    UserDto getUserById(long id);
 
     //need to decide who will be responsible for this operation (user or admin)
-    UserDto updateUser(String userId, UserDto user);
+    UserDto updateUser(long id, UserDto user);
     void deleteUser(String userId);
     List<UserDto> getUsers(int page, int limit);
 }
