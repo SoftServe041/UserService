@@ -11,6 +11,6 @@ public interface UserService {
 
     //need to decide who will be responsible for this operation (user or admin)
     UserDto updateUser(long id, UserDto user);
-    void deleteUser(String userId);
+    void deleteUser(long id);
     List<UserDto> getUsers(int page, int limit);
 }
