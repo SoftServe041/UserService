@@ -12,7 +12,7 @@ public class UserDto {
     private String email;
     private String password;
     private String encryptedPassword;
-    private String addresses;
+    private String address;
     private BillingDetailsDto billingDetails;
     private Collection<String> roles;
 }

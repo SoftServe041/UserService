@@ -41,13 +41,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto createUser(UserDto user) {
-        if (userRepository.findByEmail(user.getEmail()) != null) {
+    public UserDto createUser(UserDto userDto) {
+        if (userRepository.findByEmail(userDto.getEmail()) != null) {
             throw new UserServiceException("User already exists");
         }
 
-        UserEntity userEntity = modelMapper.map(user, UserEntity.class);
-        userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        UserEntity userEntity = modelMapper.map(userDto, UserEntity.class);
+        userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
 
         Collection<RoleEntity> roleEntities = new HashSet<>();
         RoleEntity roleEntity = roleRepository.findByName(Roles.ROLE_USER.name());
@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getUsers(int page, int limit) {
-        List<UserDto> returnValue = new ArrayList<>();
+        List<UserDto> users = new ArrayList<>();
 
         if (page > 0) {
             page -= 1;
@@ -106,14 +106,14 @@ public class UserServiceImpl implements UserService {
         Pageable pageableRequest = PageRequest.of(page, limit);
 
         Page<UserEntity> usersPage = userRepository.findAll(pageableRequest);
-        List<UserEntity> users = usersPage.getContent();
+        List<UserEntity> usersList = usersPage.getContent();
 
-        for (UserEntity userEntity : users) {
+        for (UserEntity userEntity : usersList) {
             UserDto userDto = modelMapper.map(userEntity, UserDto.class);
-            returnValue.add(userDto);
+            users.add(userDto);
         }
 
-        return returnValue;
+        return users;
     }
 
     private UserEntity getUserEntityById(long id) {
