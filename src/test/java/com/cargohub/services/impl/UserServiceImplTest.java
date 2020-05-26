@@ -12,31 +12,27 @@ import com.cargohub.repositories.UserRepository;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Optional.ofNullable;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -227,27 +223,32 @@ class UserServiceImplTest {
         doNothing().when(userRepository).delete(userEntity);
 
         userService.deleteUser(id);
+
+        verify(userRepository).findById(id);
+        verify(userRepository).delete(userEntity);
     }
 
     @Test
     void getUsers() {
-//        //given
-//        int page = 1;
-//        int limit = 1;
-//        Pageable pageableRequest = PageRequest.of(page, limit);
-//        Page<UserEntity> usersPage = mock(Page.class);
-//        UserEntity userEntity1 = new UserEntity();
-//        UserEntity userEntity2 = new UserEntity();
-//        List<UserEntity> users = Lists.newArrayList(userEntity1, userEntity2);
-//
-//        when(userRepository.findAll(pageableRequest)).thenReturn(usersPage);
-//        when(usersPage.getContent()).thenReturn(users);
-//        when(modelMapper.map(userEntity, UserDto.class)).thenReturn(userDto);
-//
-//        //when
-//        List<UserDto> result = userService.getUsers(page, limit);
-//
-//        //then
-//        assertEquals(result.size(), users.size());
+        //given
+        int page = 1;
+        int limit = 1;
+        UserEntity userEntity1 = new UserEntity();
+        UserEntity userEntity2 = new UserEntity();
+        List<UserEntity> users = Lists.newArrayList(userEntity1, userEntity2);
+        Page<UserEntity> usersPage = mock(Page.class);
+        when(usersPage.getContent()).thenReturn(users);
+
+        when(userRepository.findAll(any(PageRequest.class))).thenReturn(usersPage);
+        when(modelMapper.map(userEntity, UserDto.class)).thenReturn(userDto);
+
+        //when
+        List<UserDto> result = userService.getUsers(page, limit);
+
+        //then
+        assertEquals(result.size(), users.size());
+        verify(usersPage).getContent();
+        verify(userRepository).findAll(any(PageRequest.class));
+        verify(modelMapper, times(users.size())).map(any(), any());
     }
 }

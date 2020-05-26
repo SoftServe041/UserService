@@ -1,5 +1,3 @@
-alter table users add billing_details_id BIGINT;
-
 create table billing_details (
     id BIGINT not null AUTO_INCREMENT,
     billing_address varchar(255) not null,
@@ -12,6 +10,5 @@ create table billing_details (
 );
 
 alter table billing_details add constraint FK_Users_billing_details foreign key (users_id) references users (id);
-alter table users add constraint FK_Billing_details_users foreign key (billing_details_id) references billing_details (id);
 alter table users_roles add constraint FK_Roles_users_roles foreign key (roles_id) references roles (id);
 alter table users_roles add constraint FK_Users_users_roles foreign key (users_id) references users (id);
