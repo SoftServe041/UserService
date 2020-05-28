@@ -1,5 +1,6 @@
 package com.cargohub.services.impl;
 
+import com.cargohub.dto.BillingDetailsDto;
 import com.cargohub.dto.UserDto;
 import com.cargohub.entities.RoleEntity;
 import com.cargohub.entities.UserEntity;
@@ -18,10 +19,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -44,6 +43,12 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(UserDto userDto) {
         if (userRepository.findByEmail(userDto.getEmail()) != null) {
             throw new UserServiceException("User already exists");
+        }
+
+        for (int i = 0; i < userDto.getBillingDetails().size(); i++) {
+            BillingDetailsDto billingDetails = userDto.getBillingDetails().get(i);
+            billingDetails.setUserDetails(userDto);
+            userDto.getBillingDetails().set(i, billingDetails);
         }
 
         UserEntity userEntity = modelMapper.map(userDto, UserEntity.class);
@@ -96,8 +101,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getUsers(int page, int limit) {
-        List<UserDto> users = new ArrayList<>();
+    public Page<UserEntity> getUsers(int page, int limit) {
 
         if (page > 0) {
             page -= 1;
@@ -105,16 +109,9 @@ public class UserServiceImpl implements UserService {
 
         Pageable pageableRequest = PageRequest.of(page, limit);
 
-        Page<UserEntity> usersPage = userRepository.findAll(pageableRequest);
-        List<UserEntity> usersList = usersPage.getContent();
-
-        for (UserEntity userEntity : usersList) {
-            UserDto userDto = modelMapper.map(userEntity, UserDto.class);
-            users.add(userDto);
-        }
-
-        return users;
+        return userRepository.findAll(pageableRequest);
     }
+
 
     private UserEntity getUserEntityById(long id) {
         UserEntity userEntity = userRepository.findById(id).orElse(null);

@@ -6,18 +6,19 @@ import lombok.Data;
 import javax.persistence.*;
 import java.util.Collection;
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 @Entity
 @Table(name = "roles")
 @Data
 public class RoleEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = IDENTITY)
     private long id;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "name")
-    private Roles name;
+    private String name;
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     private Collection<UserEntity> users;

@@ -7,8 +7,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Table(name = "billing_details")
@@ -16,7 +18,7 @@ import javax.persistence.Table;
 public class BillingDetailsEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = IDENTITY)
     private long id;
 
     @Column(nullable = false)
@@ -34,7 +36,7 @@ public class BillingDetailsEntity {
     @Column(nullable = false)
     private String billingAddress;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "users_id")
     private UserEntity userDetails;
 }
