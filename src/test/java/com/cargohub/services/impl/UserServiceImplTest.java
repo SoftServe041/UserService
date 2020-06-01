@@ -17,22 +17,21 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Optional.ofNullable;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -78,21 +77,36 @@ class UserServiceImplTest {
         id = 1;
     }
 
-    private BillingDetailsEntity getBillingDetailsEntity() {
-        BillingDetailsDto billingDetailsDto = getBillingDetailsDto();
+    private List<BillingDetailsEntity> getBillingDetailsEntity() {
+        List<BillingDetailsDto> listBillingDetailsDto = getBillingDetailsDto();
+        List<BillingDetailsEntity> detailsEntityList = new ArrayList<>();
 
-        return new ModelMapper().map(billingDetailsDto, BillingDetailsEntity.class);
+        for (BillingDetailsDto bdd : listBillingDetailsDto) {
+            detailsEntityList.add(new ModelMapper().map(bdd, BillingDetailsEntity.class));
+        }
+
+        return detailsEntityList;
     }
 
-    private BillingDetailsDto getBillingDetailsDto() {
-        BillingDetailsDto billingDetailsDto = new BillingDetailsDto();
-        billingDetailsDto.setCardNumber("5523231357287208");
-        billingDetailsDto.setNameOnCard("Ivanov Ivan");
-        billingDetailsDto.setExpirationMonth("05");
-        billingDetailsDto.setExpirationYear("25");
-        billingDetailsDto.setBillingAddress("Pushkinska street 35B");
+    private List<BillingDetailsDto> getBillingDetailsDto() {
+        List<BillingDetailsDto> listBillingDetailsDto = new ArrayList<>();
+        BillingDetailsDto billingDetailsDto1 = new BillingDetailsDto();
+        billingDetailsDto1.setCardNumber("5523231357287208");
+        billingDetailsDto1.setNameOnCard("Ivanov Ivan");
+        billingDetailsDto1.setExpirationMonth("05");
+        billingDetailsDto1.setExpirationYear("25");
+        billingDetailsDto1.setBillingAddress("Pushkinska street 35B");
+        listBillingDetailsDto.add(billingDetailsDto1);
 
-        return billingDetailsDto;
+        BillingDetailsDto billingDetailsDto2 = new BillingDetailsDto();
+        billingDetailsDto2.setCardNumber("5523231357289999");
+        billingDetailsDto2.setNameOnCard("Ivanov Ivan");
+        billingDetailsDto2.setExpirationMonth("05");
+        billingDetailsDto2.setExpirationYear("27");
+        billingDetailsDto2.setBillingAddress("Pushkinska street 35B");
+        listBillingDetailsDto.add(billingDetailsDto2);
+
+        return listBillingDetailsDto;
     }
 
     private UserDto getUserDto() {
@@ -111,8 +125,7 @@ class UserServiceImplTest {
     void createUser() {
         //given
         RoleEntity role = new RoleEntity();
-        role.setId(1);
-        role.setName(Roles.ROLE_USER);
+        role.setName(Roles.ROLE_USER.name());
 
         when(userRepository.findByEmail(userDto.getEmail())).thenReturn(null);
         when(modelMapper.map(userDto, UserEntity.class)).thenReturn(userEntity);
@@ -142,9 +155,7 @@ class UserServiceImplTest {
         when(userRepository.findByEmail(userDto.getEmail())).thenReturn(userEntity);
 
         //when, then
-        assertThrows(UserServiceException.class, () -> {
-            userService.createUser(userDto);
-        });
+        assertThrows(UserServiceException.class, () -> userService.createUser(userDto));
     }
 
     @Test
@@ -168,9 +179,7 @@ class UserServiceImplTest {
         when(userRepository.findByEmail(userDto.getEmail())).thenReturn(null);
 
         //when, then
-        assertThrows(UsernameNotFoundException.class, () -> {
-            userService.getUser(userDto.getEmail());
-        });
+        assertThrows(UsernameNotFoundException.class, () -> userService.getUser(userDto.getEmail()));
     }
 
     @Test
@@ -190,9 +199,7 @@ class UserServiceImplTest {
 
     @Test
     void getUserByIdThrowsUserServiceException() {
-        assertThrows(UserServiceException.class, () -> {
-            userService.getUserById(1);
-        });
+        assertThrows(UserServiceException.class, () -> userService.getUserById(1));
     }
 
     @Test
@@ -236,19 +243,15 @@ class UserServiceImplTest {
         UserEntity userEntity1 = new UserEntity();
         UserEntity userEntity2 = new UserEntity();
         List<UserEntity> users = Lists.newArrayList(userEntity1, userEntity2);
-        Page<UserEntity> usersPage = mock(Page.class);
-        when(usersPage.getContent()).thenReturn(users);
+        Page<UserEntity> usersPage = new PageImpl<>(users);
 
         when(userRepository.findAll(any(PageRequest.class))).thenReturn(usersPage);
-        when(modelMapper.map(userEntity, UserDto.class)).thenReturn(userDto);
 
         //when
-        List<UserDto> result = userService.getUsers(page, limit);
+        Page<UserEntity> resultUsersPage = userService.getUsers(page, limit);
 
         //then
-        assertEquals(result.size(), users.size());
-        verify(usersPage).getContent();
+        assertThat(resultUsersPage, is(usersPage));
         verify(userRepository).findAll(any(PageRequest.class));
-        verify(modelMapper, times(users.size())).map(any(), any());
     }
 }
