@@ -2,8 +2,7 @@ package com.cargohub.controllers;
 
 import com.cargohub.dto.UserDto;
 import com.cargohub.entities.UserEntity;
-import com.cargohub.models.RequestUserModel;
-import com.cargohub.models.ResponseUserModel;
+import com.cargohub.models.RestUserModel;
 import com.cargohub.models.UpdateUserModel;
 import com.cargohub.services.UserService;
 import org.modelmapper.ModelMapper;
@@ -35,23 +34,22 @@ public class AdminController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Page<ResponseUserModel> getUsers (@RequestParam(value = "page", defaultValue = "0") int page,
-                                      @RequestParam(value = "limit", defaultValue = "2") int limit) {
+    public Page<RestUserModel> getUsers (@RequestParam(value = "page", defaultValue = "0") int page,
+                                         @RequestParam(value = "limit", defaultValue = "5") int limit) {
         Page<UserEntity> entityPage = userService.getUsers(page, limit);
 
-        return entityPage.map(entityObject -> modelMapper.map(entityObject, ResponseUserModel.class));
+        return entityPage.map(entityObject -> modelMapper.map(entityObject, RestUserModel.class));
     }
 
     @PutMapping(path = "/{id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RequestUserModel> updateUser(@PathVariable long id,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateUser(@PathVariable long id,
                                                        @RequestBody UpdateUserModel updateUserModel) {
         UserDto userDto = modelMapper.map(updateUserModel, UserDto.class);
 
-        UserDto updatedUserDto = userService.updateUser(id, userDto);
+        userService.updateUser(id, userDto);
 
-        return ResponseEntity.ok(modelMapper.map(updatedUserDto, RequestUserModel.class));
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")
