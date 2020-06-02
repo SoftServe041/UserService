@@ -6,10 +6,8 @@ import com.cargohub.models.RegistrationModel;
 import com.cargohub.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +25,7 @@ public class AuthenticationController {
     }
 
     @PostMapping
-    public HttpStatus register(@RequestBody RegistrationModel registrationModel) {
+    public ResponseEntity register(@RequestBody RegistrationModel registrationModel) {
         UserDto userDto = modelMapper.map(registrationModel, UserDto.class);
         BillingDetailsDto billingDetailsDto = modelMapper.map(registrationModel, BillingDetailsDto.class);
         List<BillingDetailsDto> billingDetails = new ArrayList<>();
@@ -36,7 +34,7 @@ public class AuthenticationController {
         billingDetailsDto.setUserDetails(userDto);
         userService.createUser(userDto);
 
-        return HttpStatus.CREATED;
+        return new ResponseEntity(HttpStatus.CREATED);
     }
 
 }
