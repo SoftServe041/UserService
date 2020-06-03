@@ -4,6 +4,8 @@ package com.cargohub.models;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class RegistrationModel {
@@ -13,10 +15,5 @@ public class RegistrationModel {
     private String password;
     private String address;
     private String phoneNumber;
-
-    private String cardNumber;
-    private String nameOnCard;
-    private String expirationMonth;
-    private String expirationYear;
-    private String billingAddress;
+    private List<BillingDetailsModel> billingDetails;
 }

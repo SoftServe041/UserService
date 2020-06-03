@@ -27,11 +27,6 @@ public class AuthenticationController {
     @PostMapping
     public ResponseEntity register(@RequestBody RegistrationModel registrationModel) {
         UserDto userDto = modelMapper.map(registrationModel, UserDto.class);
-        BillingDetailsDto billingDetailsDto = modelMapper.map(registrationModel, BillingDetailsDto.class);
-        List<BillingDetailsDto> billingDetails = new ArrayList<>();
-        billingDetails.add(billingDetailsDto);
-        userDto.setBillingDetails(billingDetails);
-        billingDetailsDto.setUserDetails(userDto);
         userService.createUser(userDto);
 
         return new ResponseEntity(HttpStatus.CREATED);
