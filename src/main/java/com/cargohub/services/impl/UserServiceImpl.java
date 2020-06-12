@@ -85,9 +85,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(long id, UserDto user) {
-        getUserEntityById(id);
+        UserEntity userEntity = getUserEntityById(id);
 
-        UserEntity userEntity = modelMapper.map(user, UserEntity.class);
+        userEntity.setFirstName(user.getFirstName());
+        userEntity.setLastName(user.getLastName());
+        userEntity.setEmail(user.getEmail());
+        userEntity.setAddress(user.getAddress());
+        userEntity.setPhoneNumber(user.getPhoneNumber());
+
         UserEntity storedUser = userRepository.save(userEntity);
 
         return modelMapper.map(storedUser, UserDto.class);

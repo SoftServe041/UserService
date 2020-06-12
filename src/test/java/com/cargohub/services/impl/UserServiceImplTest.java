@@ -208,7 +208,6 @@ class UserServiceImplTest {
         userEntity.setId(id);
 
         when(userRepository.findById(id)).thenReturn(ofNullable(userEntity));
-        when(modelMapper.map(userDto, UserEntity.class)).thenReturn(userEntity);
         when(userRepository.save(userEntity)).thenReturn(userEntity);
         when(modelMapper.map(userEntity, UserDto.class)).thenReturn(resultDto);
 
@@ -218,7 +217,6 @@ class UserServiceImplTest {
         //then
         verify(userRepository).findById(id);
         verify(userRepository).save(userEntity);
-        verify(modelMapper).map(userDto, UserEntity.class);
         verify(modelMapper).map(userEntity, UserDto.class);
 
         assertThat(storedUserDto, is(resultDto));
