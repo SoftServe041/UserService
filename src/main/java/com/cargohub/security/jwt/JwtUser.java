@@ -1,12 +1,9 @@
 package com.cargohub.security.jwt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.cargohub.entities.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
-import java.util.Date;
 
 
 public class JwtUser implements UserDetails {

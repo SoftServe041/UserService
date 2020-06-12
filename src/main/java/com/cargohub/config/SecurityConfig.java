@@ -1,6 +1,5 @@
 package com.cargohub.config;
 
-
 import com.cargohub.security.jwt.JwtConfigurer;
 import com.cargohub.security.jwt.JwtTokenProvider;
 import org.modelmapper.ModelMapper;
@@ -11,17 +10,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
-
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
-    }
 
     @Autowired
     public SecurityConfig(JwtTokenProvider jwtTokenProvider) {
@@ -34,7 +28,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -43,10 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/users/registration").permitAll()
-                .antMatchers("/users/login").permitAll()
-                .antMatchers("/users/get").permitAll()
-                .antMatchers("/users/ok").hasRole("ADMIN")
+                .antMatchers("registration").permitAll()
+                .antMatchers("/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider));

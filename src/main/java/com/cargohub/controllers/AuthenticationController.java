@@ -5,6 +5,7 @@ import com.cargohub.entities.RoleEntity;
 import com.cargohub.entities.UserEntity;
 import com.cargohub.models.AuthRequestModel;
 import com.cargohub.models.AuthResponseModel;
+import com.cargohub.models.RegistrationModel;
 import com.cargohub.security.jwt.JwtTokenProvider;
 import com.cargohub.services.UserService;
 import org.modelmapper.ModelMapper;
@@ -18,9 +19,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
 @RestController
@@ -41,13 +40,15 @@ public class AuthenticationController {
         this.userService = userService;
         this.modelMapper = modelMapper;
     }
-    @PostMapping
+
+    @PostMapping("/registration")
     public ResponseEntity register(@RequestBody RegistrationModel registrationModel) {
         UserDto userDto = modelMapper.map(registrationModel, UserDto.class);
         userService.createUser(userDto);
 
         return new ResponseEntity(HttpStatus.CREATED);
     }
+
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody AuthRequestModel requestDto) {
         try {
@@ -58,6 +59,7 @@ public class AuthenticationController {
             if (user == null) {
                 throw new UsernameNotFoundException("User with email: " + email + " not found");
             }
+
             UserEntity foundUser = modelMapper.map(user, UserEntity.class);
             AuthResponseModel responseModel = new AuthResponseModel();
             responseModel.setEmail(foundUser.getEmail());
@@ -70,8 +72,6 @@ public class AuthenticationController {
                     break;
                 }
             }
-
-
             return ResponseEntity.ok(responseModel);
         } catch (AuthenticationException e) {
             throw new BadCredentialsException("Invalid username or password");

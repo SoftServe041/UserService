@@ -1,11 +1,9 @@
 package com.cargohub.security;
 
-import com.cargohub.dto.UserDto;
 import com.cargohub.entities.UserEntity;
 import com.cargohub.repositories.UserRepository;
 import com.cargohub.security.jwt.JwtUser;
 import com.cargohub.security.jwt.JwtUserFactory;
-import com.cargohub.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,8 +30,7 @@ public class JwtUserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User with email: " + email + " not found");
         }
-
-        JwtUser jwtUser = JwtUserFactory.create(user/*modelMapper.map(user, UserEntity.class)*/);
+        JwtUser jwtUser = JwtUserFactory.create(user);
 
         return jwtUser;
     }

@@ -45,31 +45,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
-//        if (userRepository.findByEmail(userDto.getEmail()) != null) {
-//            throw new UserServiceException("User already exists");
-//        }
-//
-//        for (int i = 0; i < userDto.getBillingDetails().size(); i++) {
-//            BillingDetailsDto billingDetails = userDto.getBillingDetails().get(i);
-//            billingDetails.setUserDetails(userDto);
-//            userDto.getBillingDetails().set(i, billingDetails);
-//        }
-//
-//        UserEntity userEntity = modelMapper.map(userDto, UserEntity.class);
-//        userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
-//
-//        Collection<RoleEntity> roleEntities = new HashSet<>();
-//        for(RoleDto roleDto : userDto.getRoles()) {
-//            RoleEntity roleEntity = roleRepository.findByName(roleDto.getName());
-//            if (roleEntity != null) {
-//                roleEntities.add(roleEntity);
-//            }
-//        }
-//        userEntity.setRoles(roleEntities);
-//
-//        UserEntity storedUser = userRepository.save(userEntity);
+        if (userRepository.findByEmail(userDto.getEmail()) != null) {
+            throw new UserServiceException("User already exists");
+        }
 
-        return null/*modelMapper.map(storedUser, UserDto.class)*/;
+        for (int i = 0; i < userDto.getBillingDetails().size(); i++) {
+            BillingDetailsDto billingDetails = userDto.getBillingDetails().get(i);
+            billingDetails.setUserDetails(userDto);
+            userDto.getBillingDetails().set(i, billingDetails);
+        }
+
+        UserEntity userEntity = modelMapper.map(userDto, UserEntity.class);
+        userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
+
+        Collection<RoleEntity> roleEntities = new HashSet<>();
+        RoleEntity roleEntity = roleRepository.findByName(Roles.ROLE_USER.name());
+        if (roleEntity != null) {
+            roleEntities.add(roleEntity);
+        }
+        userEntity.setRoles(roleEntities);
+
+        UserEntity storedUser = userRepository.save(userEntity);
+
+        return modelMapper.map(storedUser, UserDto.class);
     }
 
     @Override
