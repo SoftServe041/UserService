@@ -1,7 +1,9 @@
 package com.cargohub.services.impl;
 
 import com.cargohub.dto.BillingDetailsDto;
+import com.cargohub.dto.RoleDto;
 import com.cargohub.dto.UserDto;
+import com.cargohub.entities.BillingDetailsEntity;
 import com.cargohub.entities.RoleEntity;
 import com.cargohub.entities.UserEntity;
 import com.cargohub.entities.extra.Roles;
@@ -19,8 +21,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -41,29 +45,31 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
-        if (userRepository.findByEmail(userDto.getEmail()) != null) {
-            throw new UserServiceException("User already exists");
-        }
+//        if (userRepository.findByEmail(userDto.getEmail()) != null) {
+//            throw new UserServiceException("User already exists");
+//        }
+//
+//        for (int i = 0; i < userDto.getBillingDetails().size(); i++) {
+//            BillingDetailsDto billingDetails = userDto.getBillingDetails().get(i);
+//            billingDetails.setUserDetails(userDto);
+//            userDto.getBillingDetails().set(i, billingDetails);
+//        }
+//
+//        UserEntity userEntity = modelMapper.map(userDto, UserEntity.class);
+//        userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
+//
+//        Collection<RoleEntity> roleEntities = new HashSet<>();
+//        for(RoleDto roleDto : userDto.getRoles()) {
+//            RoleEntity roleEntity = roleRepository.findByName(roleDto.getName());
+//            if (roleEntity != null) {
+//                roleEntities.add(roleEntity);
+//            }
+//        }
+//        userEntity.setRoles(roleEntities);
+//
+//        UserEntity storedUser = userRepository.save(userEntity);
 
-        for (int i = 0; i < userDto.getBillingDetails().size(); i++) {
-            BillingDetailsDto billingDetails = userDto.getBillingDetails().get(i);
-            billingDetails.setUserDetails(userDto);
-            userDto.getBillingDetails().set(i, billingDetails);
-        }
-
-        UserEntity userEntity = modelMapper.map(userDto, UserEntity.class);
-        userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
-
-        Collection<RoleEntity> roleEntities = new HashSet<>();
-        RoleEntity roleEntity = roleRepository.findByName(Roles.ROLE_USER.name());
-        if (roleEntity != null) {
-            roleEntities.add(roleEntity);
-        }
-        userEntity.setRoles(roleEntities);
-
-        UserEntity storedUser = userRepository.save(userEntity);
-
-        return modelMapper.map(storedUser, UserDto.class);
+        return null/*modelMapper.map(storedUser, UserDto.class)*/;
     }
 
     @Override

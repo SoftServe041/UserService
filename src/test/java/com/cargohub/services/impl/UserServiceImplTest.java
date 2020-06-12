@@ -89,7 +89,7 @@ class UserServiceImplTest {
     }
 
     private List<BillingDetailsDto> getBillingDetailsDto() {
-        List<BillingDetailsDto> listBillingDetailsDto = new ArrayList<>();
+        ArrayList<BillingDetailsDto> listBillingDetailsDto = new ArrayList<>();
         BillingDetailsDto billingDetailsDto1 = new BillingDetailsDto();
         billingDetailsDto1.setCardNumber("5523231357287208");
         billingDetailsDto1.setNameOnCard("Ivanov Ivan");
@@ -116,7 +116,7 @@ class UserServiceImplTest {
         userDto.setEmail("ivanov@test.com");
         userDto.setPassword("12564");
         userDto.setAddress("Ivanova Street 4A");
-        userDto.setBillingDetails(getBillingDetailsDto());
+        //userDto.setBillingDetails(getBillingDetailsDto());
 
         return userDto;
     }

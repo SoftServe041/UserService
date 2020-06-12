@@ -1,18 +1,17 @@
 package com.cargohub.controllers;
 
 import com.cargohub.dto.UserDto;
+import com.cargohub.entities.UserEntity;
 import com.cargohub.models.RequestUserModel;
+import com.cargohub.models.ResponseUserModel;
 import com.cargohub.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
@@ -32,12 +31,33 @@ public class UserController {
 
     @PostMapping(path = "/registration", consumes = { MediaType.APPLICATION_JSON_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE })
-    public ResponseEntity addUser( @RequestBody RequestUserModel requestUserModel) {
+    @ResponseBody
+    public ResponseEntity<ResponseUserModel> addUser(@RequestBody RequestUserModel requestUserModel) {
 
         UserDto userDto = modelMapper.map(requestUserModel, UserDto.class);
 
         UserDto createdUserDto = userService.createUser(userDto);
 
-        return ResponseEntity.ok(modelMapper.map(createdUserDto, RequestUserModel.class));
+        return new ResponseEntity<>(HttpStatus.CREATED)/*(modelMapper.map(createdUserDto, ResponseUserModel.class))*/;
+    }
+
+    @GetMapping(path = "/ok", consumes = { MediaType.APPLICATION_JSON_VALUE },
+            produces = { MediaType.APPLICATION_JSON_VALUE })
+    @ResponseBody
+    public ResponseEntity<?> ok() {
+        UserDto userDto = userService.getUser("tom2jones@gmail.com");
+
+        return ResponseEntity.ok(modelMapper.map(userDto, UserEntity.class)) ;
+
+
+        /*(modelMapper.map(createdUserDto, ResponseUserModel.class))*/
+    }
+    @GetMapping(path = "/get", consumes = { MediaType.APPLICATION_JSON_VALUE },
+            produces = { MediaType.APPLICATION_JSON_VALUE })
+    @ResponseBody
+    public ResponseEntity<?> getUser() {
+        UserDto userDto = userService.getUser("tom2jones@gmail.com");
+
+        return ResponseEntity.ok(modelMapper.map(userDto, UserEntity.class)) ;/*(modelMapper.map(createdUserDto, ResponseUserModel.class))*/
     }
 }

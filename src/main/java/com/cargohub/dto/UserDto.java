@@ -3,6 +3,7 @@ package com.cargohub.dto;
 import lombok.Data;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 @Data
