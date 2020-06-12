@@ -9,6 +9,7 @@ import com.cargohub.security.jwt.JwtTokenProvider;
 import com.cargohub.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -22,15 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/**
- * REST controller for authentication requests (login, logout, register, etc.)
- *
- * @author Eugene Suleimanov
- * @version 1.0
- */
-
 @RestController
-@RequestMapping(value = "/users")
 public class AuthenticationController {
 
     private final AuthenticationManager authenticationManager;
@@ -48,7 +41,13 @@ public class AuthenticationController {
         this.userService = userService;
         this.modelMapper = modelMapper;
     }
+    @PostMapping
+    public ResponseEntity register(@RequestBody RegistrationModel registrationModel) {
+        UserDto userDto = modelMapper.map(registrationModel, UserDto.class);
+        userService.createUser(userDto);
 
+        return new ResponseEntity(HttpStatus.CREATED);
+    }
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody AuthRequestModel requestDto) {
         try {
