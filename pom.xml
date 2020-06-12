@@ -88,7 +88,7 @@
                 <configuration>
                     <url>jdbc:mysql://localhost:3306/cargo_users?serverTimezone=UTC</url>
                     <user>root</user>
-                    <password>17171717</password>
+                    <password>CargoUsers</password>
                 </configuration>
                 <dependencies>
                     <dependency>
