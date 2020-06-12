@@ -11,9 +11,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Collection;
+import java.util.List;
+
+import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Table(name = "users")
@@ -21,7 +24,7 @@ import java.util.Collection;
 public class UserEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = IDENTITY)
     private long id;
 
     @Column(nullable = false, length = 50)
@@ -39,8 +42,11 @@ public class UserEntity {
     @Column(nullable = false)
     private String address;
 
-    @OneToOne
-    private BillingDetailsEntity billingDetails;
+    @Column(nullable = false)
+    private String phoneNumber;
+
+    @OneToMany(mappedBy = "userDetails", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BillingDetailsEntity> billingDetails;
 
     @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",
