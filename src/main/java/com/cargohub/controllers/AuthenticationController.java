@@ -1,6 +1,5 @@
 package com.cargohub.controllers;
 
-import com.cargohub.dto.BillingDetailsDto;
 import com.cargohub.dto.UserDto;
 import com.cargohub.models.RegistrationModel;
 import com.cargohub.services.UserService;
@@ -9,9 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/registration")
 public class AuthenticationController {
