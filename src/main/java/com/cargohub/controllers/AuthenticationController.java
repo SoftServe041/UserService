@@ -45,7 +45,6 @@ public class AuthenticationController {
     public ResponseEntity register(@RequestBody RegistrationModel registrationModel) {
         UserDto userDto = modelMapper.map(registrationModel, UserDto.class);
         userService.createUser(userDto);
-
         return new ResponseEntity(HttpStatus.CREATED);
     }
 

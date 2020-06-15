@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/admin/users")
+@Secured("ROLE_ADMIN")
 public class AdminController {
 
     private UserService userService;
@@ -35,31 +36,24 @@ public class AdminController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @Secured("ROLE_ADMIN")
     public Page<RestUserModel> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
                                         @RequestParam(value = "limit", defaultValue = "5") int limit) {
         Page<UserEntity> entityPage = userService.getUsers(page, limit);
-
         return entityPage.map(entityObject -> modelMapper.map(entityObject, RestUserModel.class));
     }
 
     @PutMapping(path = "/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Secured("ROLE_ADMIN")
     public ResponseEntity<?> updateUser(@PathVariable long id,
                                         @RequestBody UpdateUserModel updateUserModel) {
         UserDto userDto = modelMapper.map(updateUserModel, UserDto.class);
-
         userService.updateUser(id, userDto);
-
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")
-    @Secured("ROLE_ADMIN")
     public ResponseEntity<?> deleteUser(@PathVariable long id) {
         userService.deleteUser(id);
-
         return new ResponseEntity(HttpStatus.OK);
     }
 }
