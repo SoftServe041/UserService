@@ -15,6 +15,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private static final String SIGN_UP = "/registration";
+    private static final String SIGN_IN = "/login";
+    private static final String ADMIN = "/admin/**";
+    private static final String HOME = "/";
+
+
     private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
@@ -36,10 +42,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("registration").permitAll()
-                .antMatchers("/login").permitAll()
+                .antMatchers(SIGN_IN,SIGN_UP,HOME,"ForTheFutureAlgorithm").permitAll()
+                .antMatchers(ADMIN).hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider));
     }
+
 }
