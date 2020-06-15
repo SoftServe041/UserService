@@ -13,5 +13,5 @@ public class RestUserModel {
     private String address;
     private String phoneNumber;
     // do we need ?:
-    private List<RequestBillingDetailsModel> billingDetails;
+    private List<BillingDetailsModel> billingDetails;
 }
