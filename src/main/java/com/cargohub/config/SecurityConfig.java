@@ -2,7 +2,6 @@ package com.cargohub.config;
 
 import com.cargohub.security.jwt.JwtConfigurer;
 import com.cargohub.security.jwt.JwtTokenProvider;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,10 +21,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final RestAuthenticationEntryPoint authenticationEntryPoint;
 
     @Autowired
-    public SecurityConfig(JwtTokenProvider jwtTokenProvider) {
+    public SecurityConfig(JwtTokenProvider jwtTokenProvider, RestAuthenticationEntryPoint authenticationEntryPoint) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
     @Bean
@@ -46,7 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(ADMIN).hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
-                .apply(new JwtConfigurer(jwtTokenProvider));
+                .apply(new JwtConfigurer(jwtTokenProvider, authenticationEntryPoint));
     }
 
 }

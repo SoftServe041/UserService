@@ -1,16 +1,13 @@
 package com.cargohub.services.impl;
 
 import com.cargohub.dto.BillingDetailsDto;
-import com.cargohub.dto.RoleDto;
 import com.cargohub.dto.UserDto;
-import com.cargohub.entities.BillingDetailsEntity;
 import com.cargohub.entities.RoleEntity;
 import com.cargohub.entities.UserEntity;
 import com.cargohub.entities.extra.Roles;
 import com.cargohub.exceptions.ErrorMessages;
 import com.cargohub.exceptions.UserConflictException;
 import com.cargohub.exceptions.UserNotFoundException;
-import com.cargohub.exceptions.UserServiceException;
 import com.cargohub.repositories.RoleRepository;
 import com.cargohub.repositories.UserRepository;
 import com.cargohub.services.UserService;
@@ -23,10 +20,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
