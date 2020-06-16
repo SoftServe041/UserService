@@ -55,10 +55,6 @@ public class AuthenticationController {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, requestDto.getPassword()));
             UserDto user = userService.getUser(email);
 
-            if (user == null) {
-                throw new UsernameNotFoundException("User with email: " + email + " not found");
-            }
-
             UserEntity foundUser = modelMapper.map(user, UserEntity.class);
             AuthResponseModel responseModel = new AuthResponseModel();
             responseModel.setEmail(foundUser.getEmail());
