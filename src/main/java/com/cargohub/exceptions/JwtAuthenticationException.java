@@ -1,4 +1,4 @@
-package com.cargohub.security.jwt;
+package com.cargohub.exceptions;
 
 import org.springframework.security.core.AuthenticationException;
 
