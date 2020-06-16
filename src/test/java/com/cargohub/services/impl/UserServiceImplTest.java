@@ -6,6 +6,8 @@ import com.cargohub.entities.BillingDetailsEntity;
 import com.cargohub.entities.RoleEntity;
 import com.cargohub.entities.UserEntity;
 import com.cargohub.entities.extra.Roles;
+import com.cargohub.exceptions.UserConflictException;
+import com.cargohub.exceptions.UserNotFoundException;
 import com.cargohub.exceptions.UserServiceException;
 import com.cargohub.repositories.RoleRepository;
 import com.cargohub.repositories.UserRepository;
@@ -116,7 +118,7 @@ class UserServiceImplTest {
         userDto.setEmail("ivanov@test.com");
         userDto.setPassword("12564");
         userDto.setAddress("Ivanova Street 4A");
-        //userDto.setBillingDetails(getBillingDetailsDto());
+        userDto.setBillingDetails(getBillingDetailsDto());
 
         return userDto;
     }
@@ -150,12 +152,12 @@ class UserServiceImplTest {
     }
 
     @Test
-    void createUserThrowsUserServiceException() {
+    void createUserThrowsUserConflictException() {
         //given
         when(userRepository.findByEmail(userDto.getEmail())).thenReturn(userEntity);
 
         //when, then
-        assertThrows(UserServiceException.class, () -> userService.createUser(userDto));
+        assertThrows(UserConflictException.class, () -> userService.createUser(userDto));
     }
 
     @Test
@@ -198,8 +200,8 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getUserByIdThrowsUserServiceException() {
-        assertThrows(UserServiceException.class, () -> userService.getUserById(1));
+    void getUserByIdThrowsUserNotFoundException() {
+        assertThrows(UserNotFoundException.class, () -> userService.getUserById(1));
     }
 
     @Test
