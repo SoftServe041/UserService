@@ -84,7 +84,7 @@ public class JwtTokenProvider {
             }
 
             return true;
-        } catch (ExpiredJwtException e) {
+        } catch (JwtException e) {
             throw new JwtAuthenticationException("JWT token is expired or invalid");
         }
     }
