@@ -3,7 +3,6 @@ package com.cargohub.security.jwt;
 import com.cargohub.entities.RoleEntity;
 import com.cargohub.exceptions.JwtAuthenticationException;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -85,7 +84,11 @@ public class JwtTokenProvider {
             }
 
             return true;
+<<<<<<<<< Temporary merge branch 1
         } catch (JwtException | IllegalArgumentException e) {
+=========
+        } catch (JwtException e) {
+>>>>>>>>> Temporary merge branch 2
             throw new JwtAuthenticationException("JWT token is expired or invalid");
         }
     }
