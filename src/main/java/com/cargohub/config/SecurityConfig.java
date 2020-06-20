@@ -17,6 +17,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String SIGN_UP = "/registration";
     private static final String SIGN_IN = "/login";
     private static final String ADMIN = "/admin/**";
+    private static final String USER_PROFILE = "/user/**";
     private static final String HOME = "/";
 
 
@@ -43,8 +44,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers(SIGN_IN,SIGN_UP,HOME,"ForTheFutureAlgorithm").permitAll()
+                .antMatchers(SIGN_IN,SIGN_UP,HOME,USER_PROFILE,"ForTheFutureAlgorithm").permitAll()
                 .antMatchers(ADMIN).hasRole("ADMIN")
+                //.antMatchers(USER_PROFILE).hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider, authenticationEntryPoint));
