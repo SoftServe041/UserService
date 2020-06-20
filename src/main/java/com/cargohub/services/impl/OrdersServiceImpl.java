@@ -22,6 +22,7 @@ public class OrdersServiceImpl implements OrdersService {
     @Override
     public OrdersDto createOrder(OrdersDto ordersDto) {
         //saving to jar
+        OrdersRepository.submit(ordersDto);
         return null;
     }
 

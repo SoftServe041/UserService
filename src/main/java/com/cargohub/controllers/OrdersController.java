@@ -20,24 +20,37 @@ public class OrdersController {
     public OrdersController(ModelMapper modelMapper, OrdersService ordersService) {
         this.modelMapper = modelMapper;
     }
+
     @PostMapping("/")
     public ResponseEntity makeOrder(@RequestBody OrdersModel ordersModel) {
         OrdersDto ordersDto = modelMapper.map(ordersModel, OrdersDto.class);
-        //adding id
+        ordersDto.setTrackingId(generateTrackingId(
+                ordersDto.getDeparture(),
+                ordersDto.getArrival(),
+                ordersDto.getUserid()));
         ordersService.createOrder(ordersDto);
-        //subbmiting to repo
         return new ResponseEntity(HttpStatus.CREATED);
     }
+
     @GetMapping(path = "/PROFILE_PAGE", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getOrders(@RequestParam(value = "usedId", defaultValue = "a") int id) {
-        OrdersDto ordersDto = modelMapper.map(ordersModel, OrdersDto.class);
-        //adding id
-        ordersService.createOrder(ordersDto);
-        //subbmiting to repo
-        return new ResponseEntity(HttpStatus.CREATED);
-    }
-    private String generateOrderId(){
 
     }
 
+    private String generateTrackingId(String firstCity, String secondCity, long id) {
+
+        byte[] byteCity1 = firstCity.getBytes();
+        byte[] byteCity2 = secondCity.getBytes();
+
+        StringBuffer returnStr = new StringBuffer();
+        for (byte a : byteCity1) {
+            returnStr.append(a);
+        }
+        for (byte a : byteCity2) {
+            returnStr.append(a);
+        }
+        returnStr.append(id);
+
+        return returnStr.toString();
+    }
 }
