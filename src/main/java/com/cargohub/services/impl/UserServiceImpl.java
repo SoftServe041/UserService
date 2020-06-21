@@ -2,6 +2,7 @@ package com.cargohub.services.impl;
 
 import com.cargohub.dto.BillingDetailsDto;
 import com.cargohub.dto.UserDto;
+import com.cargohub.entities.BillingDetailsEntity;
 import com.cargohub.entities.RoleEntity;
 import com.cargohub.entities.UserEntity;
 import com.cargohub.entities.extra.Roles;
@@ -22,6 +23,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -98,6 +101,35 @@ public class UserServiceImpl implements UserService {
 
         return modelMapper.map(storedUser, UserDto.class);
     }
+
+    //////////////in propgress??
+    @Override
+    public UserDto updateUserPassword(long id, String password) {
+        UserEntity userEntity = getUserEntityById(id);
+        userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(password));
+        System.out.println(password + "  and " + userEntity.getEncryptedPassword());
+        userRepository.save(userEntity);
+        return modelMapper.map(userEntity, UserDto.class);
+    }
+    ////
+
+    @Override
+    public UserDto updateBillingDetails(long id, List<BillingDetailsDto> billingDetailsDtoList) {
+        UserEntity userEntity = getUserEntityById(id);
+        userEntity.getBillingDetails().clear();
+        List<BillingDetailsEntity> billingDetailsEntityList = billingDetailsDtoList.stream().map(b -> {
+            return modelMapper.map(b, BillingDetailsEntity.class);
+        })
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < billingDetailsEntityList.size(); i++) {
+            billingDetailsEntityList.get(i).setUserDetails(userEntity);
+            userEntity.getBillingDetails().add( billingDetailsEntityList.get(i));
+        }
+        userRepository.save(userEntity);
+        return modelMapper.map(userEntity, UserDto.class);
+    }
+
 
     @Override
     public void deleteUser(long id) {
