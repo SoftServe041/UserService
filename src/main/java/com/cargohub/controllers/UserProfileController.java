@@ -5,6 +5,7 @@ import com.cargohub.dto.UserDto;
 import com.cargohub.entities.BillingDetailsEntity;
 import com.cargohub.entities.UserEntity;
 import com.cargohub.models.BillingDetailsModel;
+import com.cargohub.models.ResetPasswordModel;
 import com.cargohub.models.RestUserModel;
 import com.cargohub.models.UpdateUserModel;
 import com.cargohub.security.jwt.JwtTokenProvider;
@@ -79,9 +80,9 @@ public class UserProfileController {
     @PutMapping(path = "/reset-password/{id}",
             consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity updateUserPassword(@PathVariable long id,
-                                             @RequestBody String password) {
+                                             @RequestBody ResetPasswordModel password) {
 
-        userService.updateUserPassword(id, password);
+        userService.updateUserPassword(id, password.getPassword());
         return new ResponseEntity(HttpStatus.OK);
     }
 
