@@ -69,7 +69,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(SIGN_IN,SIGN_UP,HOME,"ForTheFutureAlgorithm").permitAll()
                 .antMatchers(ADMIN).hasRole("ADMIN")
-                //.antMatchers(USER_PROFILE).hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider, authenticationEntryPoint));

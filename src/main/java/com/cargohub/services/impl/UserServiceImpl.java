@@ -11,6 +11,7 @@ import com.cargohub.exceptions.UserConflictException;
 import com.cargohub.exceptions.UserNotFoundException;
 import com.cargohub.repositories.RoleRepository;
 import com.cargohub.repositories.UserRepository;
+import com.cargohub.security.jwt.JwtTokenProvider;
 import com.cargohub.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,8 @@ public class UserServiceImpl implements UserService {
 
         UserEntity userEntity = modelMapper.map(userDto, UserEntity.class);
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
+        System.out.println("userDto.getPassword()" + userDto.getPassword() + " and "+
+                userEntity.getEncryptedPassword());
 
         Collection<RoleEntity> roleEntities = new HashSet<>();
         RoleEntity roleEntity = roleRepository.findByName(Roles.ROLE_USER.name());
@@ -106,10 +109,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUserPassword(long id, String password) {
         UserEntity userEntity = getUserEntityById(id);
-        userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(password));
-        System.out.println(password + "  and " + userEntity.getEncryptedPassword());
+        
+        System.out.println('\n' + "current pass " + userEntity.getEncryptedPassword() + '\n' +
+                "password will be "+ password);
+        //userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(password));
+        userEntity.setEncryptedPassword("$2a$10$r0I1zYOy.j3mMQxrquUbUepzaJYSuqVmbk2YQJzJFbEVIZ902ua.a");
+
+        System.out.println("new pass " + userEntity.getEncryptedPassword() );
+
         userRepository.save(userEntity);
-        return modelMapper.map(userEntity, UserDto.class);
+        return modelMapper.map(userEntity,UserDto.class);
     }
     ////
 

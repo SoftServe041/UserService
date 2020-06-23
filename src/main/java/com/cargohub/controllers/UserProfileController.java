@@ -7,6 +7,7 @@ import com.cargohub.entities.UserEntity;
 import com.cargohub.models.BillingDetailsModel;
 import com.cargohub.models.RestUserModel;
 import com.cargohub.models.UpdateUserModel;
+import com.cargohub.security.jwt.JwtTokenProvider;
 import com.cargohub.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -78,12 +80,9 @@ public class UserProfileController {
             consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity updateUserPassword(@PathVariable long id,
                                              @RequestBody String password) {
-        try {
-            userService.updateUserPassword(id, password);
-            return new ResponseEntity(HttpStatus.OK);
-        } catch (AuthenticationException e) {
-            throw new BadCredentialsException("Invalid username or password");
-        }
+
+        userService.updateUserPassword(id, password);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     ///BILLING
