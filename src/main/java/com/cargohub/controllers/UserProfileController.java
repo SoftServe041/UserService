@@ -91,7 +91,7 @@ public class UserProfileController {
     }
 
     @CrossOrigin
-    @PostMapping(path = "/{id}/add-billing-details",
+    @PostMapping(path = "/{id}/billing-details",
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity addUserBillingDetails(@PathVariable long id,
                                                    @RequestBody SaveBillingDetailsModel saveBillingDetailsModel) {
@@ -103,7 +103,7 @@ public class UserProfileController {
     }
 
     @CrossOrigin
-    @DeleteMapping(path = "/{id}/remove-billing-details/{cardId}",
+    @DeleteMapping(path = "/{id}/billing-details/{cardId}",
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity deleteUserBillingDetails(@PathVariable long id,
                                                    @PathVariable long cardId) {
