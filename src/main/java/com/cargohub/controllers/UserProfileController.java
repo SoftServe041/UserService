@@ -35,13 +35,10 @@ public class UserProfileController {
 
     @CrossOrigin
     @GetMapping(path = "/profile/{id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getUser(@PathVariable long id) {
         try {
             UserDto user = userService.getUserById(id);
-            if (user == null) {
-                throw new UsernameNotFoundException("User with id: " + id + " not found");
-            }
             UpdateUserModel responseModel = modelMapper.map(user, UpdateUserModel.class);
             return ResponseEntity.ok(responseModel);
         } catch (AuthenticationException e) {
@@ -75,7 +72,7 @@ public class UserProfileController {
 
     @CrossOrigin
     @GetMapping(path = "/{id}/billing-details",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BillingDetailsModel> getUserBillingDetails(@PathVariable long id) {
         try {
             UserDto user = userService.getUserById(id);

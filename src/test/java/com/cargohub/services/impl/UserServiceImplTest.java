@@ -21,20 +21,21 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class UserServiceImplTest {
 
@@ -67,7 +68,7 @@ class UserServiceImplTest {
         userEntity.setFirstName("Ivan");
         userEntity.setLastName("Ivanov");
         userEntity.setEmail("ivanov@test.com");
-        userEntity.setEncryptedPassword(encryptedPassword);
+        userEntity.setEncryptedPassword("abracadabra4323sdfs");
         userEntity.setAddress("Ivanova Street 4A");
         userEntity.setBillingDetails(getBillingDetailsEntity());
 
@@ -117,6 +118,7 @@ class UserServiceImplTest {
         userDto.setEmail("ivanov@test.com");
         userDto.setPassword("12564");
         userDto.setAddress("Ivanova Street 4A");
+        userDto.setEncryptedPassword(encryptedPassword);
         userDto.setBillingDetails(getBillingDetailsDto());
 
         return userDto;
@@ -261,16 +263,15 @@ class UserServiceImplTest {
 
         when(userRepository.findById(id)).thenReturn(ofNullable(userEntity));
         when(userRepository.save(userEntity)).thenReturn(userEntity);
-        when(modelMapper.map(userEntity, UserDto.class)).thenReturn(resultDto);
 
         //when
-        boolean changed = userService.updateUserPassword(id, userDto.getEncryptedPassword());
+        boolean saved = userService.updateUserPassword(id, "Testme");
 
         //then
         verify(userRepository).findById(id);
         verify(userRepository).save(userEntity);
 
-        assertThat(true, is(changed));
+        assertTrue(saved);
     }
 
     @Test

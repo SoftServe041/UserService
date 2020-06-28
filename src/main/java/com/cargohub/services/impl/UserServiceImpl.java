@@ -107,8 +107,8 @@ public class UserServiceImpl implements UserService {
     public boolean updateUserPassword(long id, String password) {
         UserEntity userEntity = getUserEntityById(id);
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(password));
-        userRepository.save(userEntity);
-        return true;
+        UserEntity savedUser = userRepository.save(userEntity);
+        return (savedUser != null);
     }
 
     @Override
@@ -117,8 +117,8 @@ public class UserServiceImpl implements UserService {
         BillingDetailsEntity billingDetailsEntity = modelMapper.map(billingDetailsDto, BillingDetailsEntity.class);
         userEntity.getBillingDetails().add(billingDetailsEntity);
         billingDetailsEntity.setUserDetails(userEntity);
-        userRepository.save(userEntity);
-        return true;
+        UserEntity savedUSer = userRepository.save(userEntity);
+        return (savedUSer.getBillingDetails().contains(billingDetailsEntity));
     }
 
     @Override
