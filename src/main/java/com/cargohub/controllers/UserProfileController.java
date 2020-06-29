@@ -37,13 +37,10 @@ public class UserProfileController {
     @GetMapping(path = "/profile/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getUser(@PathVariable long id) {
-        try {
-            UserDto user = userService.getUserById(id);
-            UpdateUserModel responseModel = modelMapper.map(user, UpdateUserModel.class);
-            return ResponseEntity.ok(responseModel);
-        } catch (AuthenticationException e) {
-            throw new BadCredentialsException("Invalid username or password");
-        }
+
+        UserDto user = userService.getUserById(id);
+        UpdateUserModel responseModel = modelMapper.map(user, UpdateUserModel.class);
+        return ResponseEntity.ok(responseModel);
     }
 
     @CrossOrigin
@@ -51,13 +48,9 @@ public class UserProfileController {
             consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity updateUser(@PathVariable long id,
                                      @RequestBody UpdateUserModel updateUserModel) {
-        try {
-            UserDto userDto = modelMapper.map(updateUserModel, UserDto.class);
-            userService.updateUser(id, userDto);
-            return new ResponseEntity(HttpStatus.OK);
-        } catch (AuthenticationException e) {
-            throw new BadCredentialsException("Invalid username or password");
-        }
+        UserDto userDto = modelMapper.map(updateUserModel, UserDto.class);
+        userService.updateUser(id, userDto);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @CrossOrigin
@@ -74,7 +67,6 @@ public class UserProfileController {
     @GetMapping(path = "/{id}/billing-details",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BillingDetailsModel> getUserBillingDetails(@PathVariable long id) {
-        try {
             UserDto user = userService.getUserById(id);
             List<BillingDetailsDto> pageBillingDetailsDto = user.getBillingDetails();
             List<BillingDetailsModel> pageBillingDetails = pageBillingDetailsDto.stream().map(b -> {
@@ -82,16 +74,13 @@ public class UserProfileController {
             })
                     .collect(Collectors.toList());
             return pageBillingDetails;
-        } catch (AuthenticationException e) {
-            throw new BadCredentialsException("Invalid username or password");
-        }
     }
 
     @CrossOrigin
     @PostMapping(path = "/{id}/billing-details",
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity addUserBillingDetails(@PathVariable long id,
-                                                   @RequestBody SaveBillingDetailsModel saveBillingDetailsModel) {
+                                                @RequestBody SaveBillingDetailsModel saveBillingDetailsModel) {
 
         BillingDetailsDto billingDetails = modelMapper.map(saveBillingDetailsModel, BillingDetailsDto.class);
         userService.addUsersBillingDetailsCard(id, billingDetails);
@@ -105,10 +94,10 @@ public class UserProfileController {
     public ResponseEntity deleteUserBillingDetails(@PathVariable long id,
                                                    @PathVariable long cardId) {
         System.out.println("id and card" + id + " " + cardId);
-         if (userService.removeUsersBillingDetailsCard(id, cardId)) {
-             return new ResponseEntity(HttpStatus.OK);
-         }
-         return new ResponseEntity(HttpStatus.NOT_FOUND);
+        if (userService.removeUsersBillingDetailsCard(id, cardId)) {
+            return new ResponseEntity(HttpStatus.OK);
+        }
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
 
     }
 
