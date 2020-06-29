@@ -2,6 +2,7 @@ package com.cargohub.services.impl;
 
 import com.cargohub.dto.BillingDetailsDto;
 import com.cargohub.dto.UserDto;
+import com.cargohub.entities.BillingDetailsEntity;
 import com.cargohub.entities.RoleEntity;
 import com.cargohub.entities.UserEntity;
 import com.cargohub.entities.extra.Roles;
@@ -10,6 +11,7 @@ import com.cargohub.exceptions.UserConflictException;
 import com.cargohub.exceptions.UserNotFoundException;
 import com.cargohub.repositories.RoleRepository;
 import com.cargohub.repositories.UserRepository;
+import com.cargohub.security.jwt.JwtTokenProvider;
 import com.cargohub.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -97,6 +101,38 @@ public class UserServiceImpl implements UserService {
         UserEntity storedUser = userRepository.save(userEntity);
 
         return modelMapper.map(storedUser, UserDto.class);
+    }
+
+    @Override
+    public boolean updateUserPassword(long id, String password) {
+        UserEntity userEntity = getUserEntityById(id);
+        userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(password));
+        UserEntity savedUser = userRepository.save(userEntity);
+        return (savedUser != null);
+    }
+
+    @Override
+    public boolean addUsersBillingDetailsCard(long id, BillingDetailsDto billingDetailsDto) {
+        UserEntity userEntity = getUserEntityById(id);
+        BillingDetailsEntity billingDetailsEntity = modelMapper.map(billingDetailsDto, BillingDetailsEntity.class);
+        userEntity.getBillingDetails().add(billingDetailsEntity);
+        billingDetailsEntity.setUserDetails(userEntity);
+        UserEntity savedUSer = userRepository.save(userEntity);
+        return (savedUSer.getBillingDetails().contains(billingDetailsEntity));
+    }
+
+    @Override
+    public boolean removeUsersBillingDetailsCard(long id, long cardId) {
+        UserEntity userEntity = getUserEntityById(id);
+
+        for (BillingDetailsEntity b : userEntity.getBillingDetails()) {
+            if (b.getId() == cardId) {
+                userEntity.getBillingDetails().remove(b);
+                userRepository.save(userEntity);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

@@ -5,8 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BillingDetailsModel {
-    private long id;
+public class SaveBillingDetailsModel {
     private String cardNumber;
     private String nameOnCard;
     private String expirationMonth;
