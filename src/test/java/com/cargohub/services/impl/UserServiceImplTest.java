@@ -68,7 +68,7 @@ class UserServiceImplTest {
         userEntity.setFirstName("Ivan");
         userEntity.setLastName("Ivanov");
         userEntity.setEmail("ivanov@test.com");
-        userEntity.setEncryptedPassword("abracadabra4323sdfs");
+        userEntity.setEncryptedPassword(encryptedPassword);
         userEntity.setAddress("Ivanova Street 4A");
         userEntity.setBillingDetails(getBillingDetailsEntity());
 
