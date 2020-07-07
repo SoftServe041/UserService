@@ -21,6 +21,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -30,8 +31,7 @@ import java.util.List;
 import static java.util.Optional.ofNullable;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -118,6 +118,7 @@ class UserServiceImplTest {
         userDto.setEmail("ivanov@test.com");
         userDto.setPassword("12564");
         userDto.setAddress("Ivanova Street 4A");
+        userDto.setEncryptedPassword(encryptedPassword);
         userDto.setBillingDetails(getBillingDetailsDto());
 
         return userDto;
@@ -254,4 +255,64 @@ class UserServiceImplTest {
         assertThat(resultUsersPage, is(usersPage));
         verify(userRepository).findAll(any(PageRequest.class));
     }
+
+    @Test
+    void updateUserPassword() {
+        //given
+        userEntity.setId(id);
+
+        when(userRepository.findById(id)).thenReturn(ofNullable(userEntity));
+        when(userRepository.save(userEntity)).thenReturn(userEntity);
+
+        //when
+        boolean saved = userService.updateUserPassword(id, "Testme");
+
+        //then
+        verify(userRepository).findById(id);
+        verify(userRepository).save(userEntity);
+
+        assertTrue(saved);
+    }
+
+    @Test
+    void addUsersBillingDetailsCard() {
+        //given
+        userEntity.setId(id);
+        BillingDetailsDto billingDetailsDto = new BillingDetailsDto();
+        BillingDetailsEntity billingDetailsEntity = new BillingDetailsEntity();
+
+        when(userRepository.findById(id)).thenReturn(ofNullable(userEntity));
+        when(modelMapper.map(billingDetailsDto, BillingDetailsEntity.class)).thenReturn(billingDetailsEntity);
+        when(userRepository.save(userEntity)).thenReturn(userEntity);
+
+        //when
+        boolean check = userService.addUsersBillingDetailsCard(id, billingDetailsDto);
+
+        //then
+        verify(modelMapper).map(billingDetailsDto, BillingDetailsEntity.class);
+        verify(userRepository).save(userEntity);
+
+        assertTrue(check);
+    }
+
+    @Test
+    void removeUsersBillingDetailsCard() {
+        userEntity.setId(id);
+        int idToBeRemoved = 0;
+        List<BillingDetailsEntity> billingDetailsEntityList = new ArrayList<>();
+        billingDetailsEntityList.add(new BillingDetailsEntity());
+
+        when(userRepository.findById(id)).thenReturn(ofNullable(userEntity));
+        int countBeforeRemove = userEntity.getBillingDetails().size();
+        when(userRepository.save(userEntity)).thenReturn(userEntity);
+
+        //when
+        userService.removeUsersBillingDetailsCard(id, idToBeRemoved);
+        int countAfterRemove = userEntity.getBillingDetails().size();
+        //then
+
+        assertThat(countBeforeRemove, is(countAfterRemove + 1));
+    }
+
+
 }

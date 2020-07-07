@@ -109,33 +109,37 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(storedUser, UserDto.class);
     }
 
-    //////////////in propgress??
     @Override
-    public UserDto updateUserPassword(long id, String password) {
+    public boolean updateUserPassword(long id, String password) {
         UserEntity userEntity = getUserEntityById(id);
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(password));
-        userRepository.save(userEntity);
-        return modelMapper.map(userEntity,UserDto.class);
+        UserEntity savedUser = userRepository.save(userEntity);
+        return (savedUser != null);
     }
-    ////
 
     @Override
-    public UserDto updateBillingDetails(long id, List<BillingDetailsDto> billingDetailsDtoList) {
+    public boolean addUsersBillingDetailsCard(long id, BillingDetailsDto billingDetailsDto) {
         UserEntity userEntity = getUserEntityById(id);
-        userEntity.getBillingDetails().clear();
-        List<BillingDetailsEntity> billingDetailsEntityList = billingDetailsDtoList.stream().map(b -> {
-            return modelMapper.map(b, BillingDetailsEntity.class);
-        })
-                .collect(Collectors.toList());
-
-        for (int i = 0; i < billingDetailsEntityList.size(); i++) {
-            billingDetailsEntityList.get(i).setUserDetails(userEntity);
-            userEntity.getBillingDetails().add( billingDetailsEntityList.get(i));
-        }
-        userRepository.save(userEntity);
-        return modelMapper.map(userEntity, UserDto.class);
+        BillingDetailsEntity billingDetailsEntity = modelMapper.map(billingDetailsDto, BillingDetailsEntity.class);
+        userEntity.getBillingDetails().add(billingDetailsEntity);
+        billingDetailsEntity.setUserDetails(userEntity);
+        UserEntity savedUSer = userRepository.save(userEntity);
+        return (savedUSer.getBillingDetails().contains(billingDetailsEntity));
     }
 
+    @Override
+    public boolean removeUsersBillingDetailsCard(long id, long cardId) {
+        UserEntity userEntity = getUserEntityById(id);
+
+        for (BillingDetailsEntity b : userEntity.getBillingDetails()) {
+            if (b.getId() == cardId) {
+                userEntity.getBillingDetails().remove(b);
+                userRepository.save(userEntity);
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     public void deleteUser(long id) {

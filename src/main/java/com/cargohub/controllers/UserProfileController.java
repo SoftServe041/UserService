@@ -2,37 +2,25 @@ package com.cargohub.controllers;
 
 import com.cargohub.dto.BillingDetailsDto;
 import com.cargohub.dto.UserDto;
-import com.cargohub.entities.BillingDetailsEntity;
-import com.cargohub.entities.UserEntity;
-import com.cargohub.models.BillingDetailsModel;
-import com.cargohub.models.ResetPasswordModel;
-import com.cargohub.models.RestUserModel;
-import com.cargohub.models.UpdateUserModel;
-import com.cargohub.security.jwt.JwtTokenProvider;
+import com.cargohub.models.*;
 import com.cargohub.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
 @RestController
 @CrossOrigin
-@RequestMapping("/user/profile")
-//@Secured({"ROLE_ADMIN","ROLE_USER"})
+@RequestMapping("/user")
 public class UserProfileController {
 
     private UserService userService;
@@ -45,39 +33,28 @@ public class UserProfileController {
 
     }
 
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping(path = "/{id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin
+    @GetMapping(path = "/profile/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getUser(@PathVariable long id) {
-        try {
-            UserDto user = userService.getUserById(id);
-            if (user == null) {
-                throw new UsernameNotFoundException("User with id: " + id + " not found");
-            }
-            UpdateUserModel responseModel = modelMapper.map(user, UpdateUserModel.class);
-            return ResponseEntity.ok(responseModel);
-        } catch (AuthenticationException e) {
-            throw new BadCredentialsException("Invalid username or password");
-        }
+
+        UserDto user = userService.getUserById(id);
+        UpdateUserModel responseModel = modelMapper.map(user, UpdateUserModel.class);
+        return ResponseEntity.ok(responseModel);
     }
 
     @CrossOrigin
-    @PutMapping(path = "/{id}",
+    @PutMapping(path = "/profile/{id}",
             consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity updateUser(@PathVariable long id,
                                      @RequestBody UpdateUserModel updateUserModel) {
-        try {
-            UserDto userDto = modelMapper.map(updateUserModel, UserDto.class);
-            userService.updateUser(id, userDto);
-            return new ResponseEntity(HttpStatus.OK);
-        } catch (AuthenticationException e) {
-            throw new BadCredentialsException("Invalid username or password");
-        }
+        UserDto userDto = modelMapper.map(updateUserModel, UserDto.class);
+        userService.updateUser(id, userDto);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @CrossOrigin
-    @PutMapping(path = "/reset-password/{id}",
+    @PutMapping(path = "/profile/reset-password/{id}",
             consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity updateUserPassword(@PathVariable long id,
                                              @RequestBody ResetPasswordModel password) {
@@ -86,12 +63,10 @@ public class UserProfileController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    ///BILLING
     @CrossOrigin
-    @GetMapping(path = "/billing-details/{id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{id}/billing-details",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BillingDetailsModel> getUserBillingDetails(@PathVariable long id) {
-        try {
             UserDto user = userService.getUserById(id);
             List<BillingDetailsDto> pageBillingDetailsDto = user.getBillingDetails();
             List<BillingDetailsModel> pageBillingDetails = pageBillingDetailsDto.stream().map(b -> {
@@ -99,28 +74,31 @@ public class UserProfileController {
             })
                     .collect(Collectors.toList());
             return pageBillingDetails;
-        } catch (AuthenticationException e) {
-            throw new BadCredentialsException("Invalid username or password");
-        }
     }
 
+    @CrossOrigin
+    @PostMapping(path = "/{id}/billing-details",
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity addUserBillingDetails(@PathVariable long id,
+                                                @RequestBody SaveBillingDetailsModel saveBillingDetailsModel) {
+
+        BillingDetailsDto billingDetails = modelMapper.map(saveBillingDetailsModel, BillingDetailsDto.class);
+        userService.addUsersBillingDetailsCard(id, billingDetails);
+        return new ResponseEntity(HttpStatus.OK);
+
+    }
 
     @CrossOrigin
-    @PutMapping(path = "/billing-details/{id}",
+    @DeleteMapping(path = "/{id}/billing-details/{cardId}",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateUserBillingDetails(@PathVariable long id,
-                                                   @RequestBody List<BillingDetailsModel> billingDetailsModels) {
-        try {
-            List<BillingDetailsDto> billingDetails = billingDetailsModels.stream().map(b -> {
-                return modelMapper.map(b, BillingDetailsDto.class);
-            })
-                    .collect(Collectors.toList());
-
-            userService.updateBillingDetails(id, billingDetails);
+    public ResponseEntity deleteUserBillingDetails(@PathVariable long id,
+                                                   @PathVariable long cardId) {
+        System.out.println("id and card" + id + " " + cardId);
+        if (userService.removeUsersBillingDetailsCard(id, cardId)) {
             return new ResponseEntity(HttpStatus.OK);
-        } catch (AuthenticationException e) {
-            throw new BadCredentialsException("Invalid username or password");
         }
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
+
     }
 
 
