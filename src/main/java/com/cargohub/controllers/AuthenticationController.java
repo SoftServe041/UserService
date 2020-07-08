@@ -1,25 +1,27 @@
 package com.cargohub.controllers;
 
+import com.cargohub.dto.JwtTokenBlackListDto;
 import com.cargohub.dto.UserDto;
 import com.cargohub.entities.RoleEntity;
 import com.cargohub.entities.UserEntity;
 import com.cargohub.models.AuthRequestModel;
 import com.cargohub.models.AuthResponseModel;
 import com.cargohub.models.RegistrationModel;
+import com.cargohub.models.RestUserModel;
 import com.cargohub.security.jwt.JwtTokenProvider;
 import com.cargohub.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @CrossOrigin
@@ -40,6 +42,15 @@ public class AuthenticationController {
         this.jwtTokenProvider = jwtTokenProvider;
         this.userService = userService;
         this.modelMapper = modelMapper;
+    }
+    @GetMapping(path = "/reset")
+    public ResponseEntity logOut(@RequestHeader (value = "Authorization") String token){
+        JwtTokenBlackListDto jwtTokenBlackListDto = userService.getToken(token);
+        if(jwtTokenBlackListDto != null){
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+        userService.saveTokenToBlackList(token);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @PostMapping("/registration")
