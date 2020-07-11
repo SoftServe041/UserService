@@ -43,6 +43,7 @@ public class AuthenticationController {
         this.userService = userService;
         this.modelMapper = modelMapper;
     }
+
     @GetMapping(path = "/reset")
     public ResponseEntity logOut(@RequestHeader (value = "Authorization") String token){
         JwtTokenBlackListDto jwtTokenBlackListDto = userService.getToken(token);

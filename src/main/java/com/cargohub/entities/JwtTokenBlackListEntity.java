@@ -22,6 +22,5 @@ public class JwtTokenBlackListEntity {
     private String token;
 
     @Column(nullable = false)
-    @CreationTimestamp
-    private LocalDateTime dateOfAdding = LocalDateTime.now(ZoneId.of("UTC-2"));
+    private LocalDateTime dateOfAdding;
 }

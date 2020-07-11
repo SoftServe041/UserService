@@ -25,6 +25,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -173,6 +174,7 @@ public class UserServiceImpl implements UserService {
     public void saveTokenToBlackList(String token) {
         JwtTokenBlackListEntity jwtTokenBlackListEntity = new JwtTokenBlackListEntity();
         jwtTokenBlackListEntity.setToken(token);
+        jwtTokenBlackListEntity.setDateOfAdding(LocalDateTime.now());
         jwtTokenBlackListRepository.save(jwtTokenBlackListEntity);
     }
 
