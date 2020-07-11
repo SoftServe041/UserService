@@ -1,8 +1,13 @@
 package com.cargohub.entities;
 
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Entity
 @Table(name = "jwtblacklist")
@@ -15,4 +20,8 @@ public class JwtTokenBlackListEntity {
 
     @Column(nullable = false, length = 255)
     private String token;
+
+    @Column(nullable = false)
+    @CreationTimestamp
+    private LocalDateTime dateOfAdding = LocalDateTime.now(ZoneId.of("UTC-2"));
 }
