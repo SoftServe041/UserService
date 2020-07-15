@@ -99,13 +99,15 @@ public class UserServiceImpl implements UserService {
         userEntity.setEmail(user.getEmail());
         userEntity.setAddress(user.getAddress());
         userEntity.setPhoneNumber(user.getPhoneNumber());
-        List<RoleEntity> roleList = new ArrayList<>();
-        roleList.add(roleRepository.findByName("ROLE_USER"));
-        for(RoleDto roleDto : user.getRoles()){
-            if(roleDto.getName().equals("ROLE_ADMIN"))
-                roleList.add(roleRepository.findByName("ROLE_ADMIN"));
+        if (user.getRoles() != null) {
+            List<RoleEntity> roleList = new ArrayList<>();
+            roleList.add(roleRepository.findByName("ROLE_USER"));
+            for (RoleDto roleDto : user.getRoles()) {
+                if (roleDto.getName().equals("ROLE_ADMIN"))
+                    roleList.add(roleRepository.findByName("ROLE_ADMIN"));
+            }
+            userEntity.setRoles(roleList);
         }
-        userEntity.setRoles(roleList);
         UserEntity storedUser = userRepository.save(userEntity);
 
         return modelMapper.map(storedUser, UserDto.class);

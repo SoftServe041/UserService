@@ -48,7 +48,9 @@ public class UserProfileController {
             consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity updateUser(@PathVariable long id,
                                      @RequestBody UpdateUserModel updateUserModel) {
+        System.out.println(updateUserModel.getEmail());
         UserDto userDto = modelMapper.map(updateUserModel, UserDto.class);
+        System.out.println(userDto.toString());
         userService.updateUser(id, userDto);
         return new ResponseEntity(HttpStatus.OK);
     }

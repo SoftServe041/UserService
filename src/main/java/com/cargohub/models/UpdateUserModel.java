@@ -12,6 +12,5 @@ public class UpdateUserModel {
     private String email;
     private String address;
     private String phoneNumber;
-    //private Collection<String> roles;
     private Collection<RoleDto> roles;
 }
