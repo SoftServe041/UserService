@@ -1,7 +1,9 @@
 package com.cargohub.models;
 
+import com.cargohub.entities.RoleEntity;
 import lombok.Data;
 
+import java.util.Collection;
 import java.util.List;
 
 @Data
@@ -12,6 +14,7 @@ public class RestUserModel {
     private String email;
     private String address;
     private String phoneNumber;
+    Collection<String> roles;
     // do we need ?:
     private List<BillingDetailsModel> billingDetails;
 }
