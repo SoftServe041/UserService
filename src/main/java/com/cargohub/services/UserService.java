@@ -1,6 +1,7 @@
 package com.cargohub.services;
 
 import com.cargohub.dto.BillingDetailsDto;
+import com.cargohub.dto.JwtTokenBlackListDto;
 import com.cargohub.dto.UserDto;
 import com.cargohub.entities.UserEntity;
 import org.springframework.data.domain.Page;
@@ -19,4 +20,8 @@ public interface UserService {
 
     void deleteUser(long id);
     Page<UserEntity> getUsers(int page, int limit);
+
+    JwtTokenBlackListDto getToken(String token);
+    void saveTokenToBlackList(String token);
+
 }
