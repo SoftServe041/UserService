@@ -61,6 +61,16 @@ public class AuthenticationController {
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
+    @PostMapping("/admin/batch/registration")
+    public ResponseEntity registerBatch(@RequestBody RegistrationModel[] registrationModels) {
+        for (RegistrationModel registrationModel : registrationModels) {
+            UserDto userDto = modelMapper.map(registrationModel, UserDto.class);
+            userService.createUser(userDto);
+        }
+        ResponseEntity<?> responseEntity = new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity(HttpStatus.CREATED);
+    }
+
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody AuthRequestModel requestDto) {
         try {
