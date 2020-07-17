@@ -1,6 +1,9 @@
 package com.cargohub.models;
 
+import com.cargohub.dto.RoleDto;
 import lombok.Data;
+
+import java.util.Collection;
 
 @Data
 public class UpdateUserModel {
@@ -9,4 +12,5 @@ public class UpdateUserModel {
     private String email;
     private String address;
     private String phoneNumber;
+    private Collection<RoleDto> roles;
 }

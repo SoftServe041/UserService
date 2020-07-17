@@ -2,6 +2,7 @@ package com.cargohub.services.impl;
 
 import com.cargohub.dto.BillingDetailsDto;
 import com.cargohub.dto.JwtTokenBlackListDto;
+import com.cargohub.dto.RoleDto;
 import com.cargohub.dto.UserDto;
 import com.cargohub.entities.BillingDetailsEntity;
 import com.cargohub.entities.JwtTokenBlackListEntity;
@@ -26,6 +27,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -104,7 +106,15 @@ public class UserServiceImpl implements UserService {
         userEntity.setEmail(user.getEmail());
         userEntity.setAddress(user.getAddress());
         userEntity.setPhoneNumber(user.getPhoneNumber());
-
+        if (user.getRoles() != null) {
+            List<RoleEntity> roleList = new ArrayList<>();
+            roleList.add(roleRepository.findByName("ROLE_USER"));
+            for (RoleDto roleDto : user.getRoles()) {
+                if (roleDto.getName().equals("ROLE_ADMIN"))
+                    roleList.add(roleRepository.findByName("ROLE_ADMIN"));
+            }
+            userEntity.setRoles(roleList);
+        }
         UserEntity storedUser = userRepository.save(userEntity);
 
         return modelMapper.map(storedUser, UserDto.class);
