@@ -42,6 +42,14 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.connetor.version}</version>
         </dependency>
+
+        <!-- FlyWay -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>6.4.4</version>
+        </dependency>
+
         <!-- JSON Web Token lib -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -84,9 +92,9 @@
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
-                <version>6.4.2</version>
+                <version>6.4.4</version>
                 <configuration>
-                    <url>jdbc:mysql://localhost:3306/cargo_users?serverTimezone=UTC</url>
+                    <url>jdbc:mysql://mysql:3306/cargo_users?serverTimezone=Europe/Kiev&amp;autoReconnect=true&amp;useSSL=false</url>
                     <user>root</user>
                     <password>CargoUsers</password>
                 </configuration>

@@ -1,0 +1,67 @@
+version: '3'
+services:
+  user-service:
+    image: user-service
+    container_name: us-cargo
+    ports:
+      - 8041:8041
+    depends_on:
+      - db_mysql
+
+  algorithm-service:
+    image: algorithm-service
+    container_name: as-cargo
+    ports:
+      - 9041:9041
+    depends_on:
+      - db_mysql
+      - db_neo4j
+
+  db_mysql:
+    image: mysql:5.7
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: cargo_users
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: CargoUsers
+    entrypoint:
+      sh -c "
+      echo 'CREATE DATABASE IF NOT EXISTS cargo_users; CREATE DATABASE IF NOT EXISTS cargo_transports;' > /docker-entrypoint-initdb.d/init.sql;
+      /usr/local/bin/docker-entrypoint.sh --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+      "
+    ports:
+      - 3306:3306
+
+  db_neo4j:
+    image: neo4j:latest
+    restart: unless-stopped
+    container_name: neo4j
+    ports:
+      - 7474:7474
+      - 7687:7687
+    volumes:
+      - ./conf:/conf
+      - ./data:/data
+      - ./import:/import
+      - ./logs:/logs
+      - ./plugins:/plugins
+    environment:
+      - NEO4J_AUTH=neo4j/Graph1
+      - NEO4J_apoc_export_file_enabled=true
+      - NEO4J_apoc_import_file_enabled=true
+      - NEO4J_apoc_import_file_use__neo4j__config=true
+      - NEO4JLABS_PLUGINS=\[\"apoc\"\]
+
+#  front:
+#    image: cargo-web
+#    container_name: ui-cargo
+##    volumes:
+##      - .:/app
+##      - /app/node_modules
+##    environment:
+##      - CI=true
+##      - CHOKIDAR_USEPOLLING=true
+##    stdin_open: true
+##    tty: true
+#    ports:
+#      - 3001:3000
