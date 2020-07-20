@@ -7,6 +7,8 @@ services:
       - 8041:8041
     depends_on:
       - db_mysql
+    networks:
+      - back
 
   algorithm-service:
     image: algorithm-service
@@ -16,6 +18,8 @@ services:
     depends_on:
       - db_mysql
       - db_neo4j
+    networks:
+      - back
 
   db_mysql:
     image: mysql:5.7
@@ -31,37 +35,44 @@ services:
       "
     ports:
       - 3306:3306
+    networks:
+      - back
 
   db_neo4j:
-    image: neo4j:latest
-    restart: unless-stopped
+    image: neo4j:3.5.4-enterprise
+#    hostname: neo4j
+#    restart: unless-stopped
     container_name: neo4j
     ports:
-      - 7474:7474
-      - 7687:7687
+      - "7473:7473"
+      - "7474:7474"
+      - "7687:7687"
     volumes:
-      - ./conf:/conf
-      - ./data:/data
-      - ./import:/import
-      - ./logs:/logs
-      - ./plugins:/plugins
+      - ./test-plugins:/plugins
+      - ./data:/import
     environment:
       - NEO4J_AUTH=neo4j/Graph1
-      - NEO4J_apoc_export_file_enabled=true
-      - NEO4J_apoc_import_file_enabled=true
-      - NEO4J_apoc_import_file_use__neo4j__config=true
-      - NEO4JLABS_PLUGINS=\[\"apoc\"\]
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*,algo.*
+    networks:
+      - back
 
 #  front:
-#    image: cargo-web
+#    image: cargo-front
 #    container_name: ui-cargo
-##    volumes:
-##      - .:/app
-##      - /app/node_modules
-##    environment:
-##      - CI=true
-##      - CHOKIDAR_USEPOLLING=true
-##    stdin_open: true
-##    tty: true
+#    volumes:
+#      - .:/app
+#      - /app/node_modules
+#    environment:
+#      - CI=true
+#      - CHOKIDAR_USEPOLLING=true
+#    stdin_open: true
+#    tty: true
 #    ports:
 #      - 3001:3000
+#    networks:
+#      - back
+
+networks:
+  back:
+    driver: bridge
