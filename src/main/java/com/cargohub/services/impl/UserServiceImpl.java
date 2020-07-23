@@ -1,14 +1,18 @@
 package com.cargohub.services.impl;
 
 import com.cargohub.dto.BillingDetailsDto;
+import com.cargohub.dto.JwtTokenBlackListDto;
+import com.cargohub.dto.RoleDto;
 import com.cargohub.dto.UserDto;
 import com.cargohub.entities.BillingDetailsEntity;
+import com.cargohub.entities.JwtTokenBlackListEntity;
 import com.cargohub.entities.RoleEntity;
 import com.cargohub.entities.UserEntity;
 import com.cargohub.entities.extra.Roles;
 import com.cargohub.exceptions.ErrorMessages;
 import com.cargohub.exceptions.UserConflictException;
 import com.cargohub.exceptions.UserNotFoundException;
+import com.cargohub.repositories.JwtTokenBlackListRepository;
 import com.cargohub.repositories.RoleRepository;
 import com.cargohub.repositories.UserRepository;
 import com.cargohub.security.jwt.JwtTokenProvider;
@@ -22,6 +26,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -32,14 +38,17 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final JwtTokenBlackListRepository jwtTokenBlackListRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ModelMapper modelMapper;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
+                           JwtTokenBlackListRepository jwtTokenBlackListRepository,
                            BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.jwtTokenBlackListRepository = jwtTokenBlackListRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.modelMapper = modelMapper;
     }
@@ -97,7 +106,15 @@ public class UserServiceImpl implements UserService {
         userEntity.setEmail(user.getEmail());
         userEntity.setAddress(user.getAddress());
         userEntity.setPhoneNumber(user.getPhoneNumber());
-
+        if (user.getRoles() != null) {
+            List<RoleEntity> roleList = new ArrayList<>();
+            roleList.add(roleRepository.findByName("ROLE_USER"));
+            for (RoleDto roleDto : user.getRoles()) {
+                if (roleDto.getName().equals("ROLE_ADMIN"))
+                    roleList.add(roleRepository.findByName("ROLE_ADMIN"));
+            }
+            userEntity.setRoles(roleList);
+        }
         UserEntity storedUser = userRepository.save(userEntity);
 
         return modelMapper.map(storedUser, UserDto.class);
@@ -152,6 +169,23 @@ public class UserServiceImpl implements UserService {
         Pageable pageableRequest = PageRequest.of(page, limit);
 
         return userRepository.findAll(pageableRequest);
+    }
+
+    @Override
+    public JwtTokenBlackListDto getToken(String token) {
+        JwtTokenBlackListEntity jwtTokenBlackListEntity = jwtTokenBlackListRepository.findByToken(token);
+        if(jwtTokenBlackListEntity == null){
+            return null;
+        }
+        return modelMapper.map(jwtTokenBlackListEntity, JwtTokenBlackListDto.class);
+    }
+
+    @Override
+    public void saveTokenToBlackList(String token) {
+        JwtTokenBlackListEntity jwtTokenBlackListEntity = new JwtTokenBlackListEntity();
+        jwtTokenBlackListEntity.setToken(token);
+        jwtTokenBlackListEntity.setDateOfAdding(LocalDateTime.now());
+        jwtTokenBlackListRepository.save(jwtTokenBlackListEntity);
     }
 
 

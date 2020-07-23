@@ -1,7 +1,9 @@
 package com.cargohub.security.jwt;
 
+import com.cargohub.dto.JwtTokenBlackListDto;
 import com.cargohub.entities.RoleEntity;
 import com.cargohub.exceptions.JwtAuthenticationException;
+import com.cargohub.services.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
@@ -36,6 +38,9 @@ public class JwtTokenProvider {
     @Qualifier("jwtUserDetailsService")
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private UserService userService;
 
     @PostConstruct
     protected void init() {
@@ -78,11 +83,14 @@ public class JwtTokenProvider {
     public boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+            JwtTokenBlackListDto jwtTokenBlackListDto = userService.getToken("Bearer_" + token);
 
             if (claims.getBody().getExpiration().before(new Date())) {
                 return false;
             }
-
+            if(jwtTokenBlackListDto != null){
+                throw new JwtAuthenticationException("JWT token is expired or invalid");
+            }
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             throw new JwtAuthenticationException("JWT token is expired or invalid");
